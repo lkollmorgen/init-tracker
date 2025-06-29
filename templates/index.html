@@ -25,7 +25,7 @@
 <ol>
 		{%for combatant in initiative_list %}
 			{% set i = loop.index0 %}
-			<li {% if i == current_turn %}style="font-weight:bold;"{% endif %}>
+			<li {% if i == current_turn %}style="font-weight:bold;color: red"{% endif %}>
 					{{ combatant.name }} ({{ combatant.initiative }})
 					{% if i == current_turn %} - Current Turn {% endif %}
 			</li>
