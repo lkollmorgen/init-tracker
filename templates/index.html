@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<title>Initiative Tracker B)</title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootsrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container my-4">
+		<h1>Initiative Tracker</h1>
+
+		<form method="post" action="/add" class="mb-3">
+		<div class="row">
+			<div class="col">
+				<input name="name" placeholder="Name" class="form-control" required>
+				</div>
+			<div class="col">
+				<input name="initiative" type="number" placeholder="Initiative" class=form-control" required>
+				</div>
+			<div class="col">
+				<button type="submit" class="btn btn-primary">Add</button>
+			</div>
+		</div>
+	</form>
+
+<h2>Initiative Order:</h2>
+<ol>
+	{% for i, combatant in enumerate(initiative_list) %}
+			<li {% if i == current_turn %}style="font-weight:bold;"{% endif %}>
+					{{ combatant.name }} ({{ combatant.initiative }})
+					{ if i == curent_turn %} - Current Turn {% endif %}
+			</li>
+	{% endfor %}
+</ol>
+
+<div class="mt-3">
+		<a href="/next" class="btn btn-success">Next Turn</a>
+		<a href="/reset" class="btn btn-danger">Reset</a>
+</div>
+
+</body>
+</html>
