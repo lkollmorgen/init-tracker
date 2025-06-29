@@ -2,10 +2,10 @@
 <html>
 <head>
 		<title>Initiative Tracker B)</title>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootsrap@5.3.0/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body class="container my-4">
-		<h1>Initiative Tracker</h1>
+		<h1>Initiative Tracker B)</h1>
 
 		<form method="post" action="/add" class="mb-3">
 		<div class="row">
@@ -23,13 +23,18 @@
 
 <h2>Initiative Order:</h2>
 <ol>
-		{%for combatant in initiative_list %}
+		{% for combatant in initiative_list %}
 			{% set i = loop.index0 %}
-			<li {% if i == current_turn %}style="font-weight:bold;color: red"{% endif %}>
-					{{ combatant.name }} ({{ combatant.initiative }})
-					{% if i == current_turn %} - Current Turn {% endif %}
+			<li class="
+					{% if i == current_turn %}fw-bold text-danger {% endif %}
+					{% if combatant.status == 'dead' %}dead{% endif %}
+			">
+				{{ combatant.name}} ({{ combatant.initiative }})
+
+				{% if combatant.status != 'dead' %}
+						<a href="{{ url_for('dead', name=combatant.name) }}" class="btn btn-sm btn-warning ms-2">Dead</a> {% endif %}
 			</li>
-	{% endfor %}
+			{% endfor %}
 </ol>
 
 <div class="mt-3">
