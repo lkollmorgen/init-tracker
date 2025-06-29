@@ -23,10 +23,11 @@
 
 <h2>Initiative Order:</h2>
 <ol>
-	{% for i, combatant in enumerate(initiative_list) %}
+		{%for combatant in initiative_list %}
+			{% set i = loop.index0 %}
 			<li {% if i == current_turn %}style="font-weight:bold;"{% endif %}>
 					{{ combatant.name }} ({{ combatant.initiative }})
-					{ if i == curent_turn %} - Current Turn {% endif %}
+					{% if i == current_turn %} - Current Turn {% endif %}
 			</li>
 	{% endfor %}
 </ol>
