@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Initiative Tracker</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+	<style>
+			body {
+					font-size: 2rem;
+			}
+			.current-turn {
+					color: red;
+					font-weight: bold;
+			}
+			.dead {
+					text-decoration: line-through;
+					color: gray;
+			}
+		</style>
+
+	<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap" rel="stylesheet">
+</head>
+<body class="container my-4">
+
+	<h1 style="font-family: 'Cinzel Decorative', serif;"> INIATIVE ORDER</h1>
+
+	<ol>
+		{% for combatant in initiative_list %}
+				<li class="
+						{% if loop.index0 == current_turn %} current-turn {% endif %}
+						{% if combatant.status == 'dead' %} dead {% endif %}
+				">
+						{{ combatant.name }} ({{ combatant.initiative }})
+				</li>
+		{% endfor %}
+	</ol>
+
+	<script>
+			setInterval(function() {
+					location.reload();
+			}, 1000);	//auto refresh
+	</script>
+
+</body>
+</html>
+
+
