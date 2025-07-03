@@ -11,18 +11,21 @@
 					color: red;
 					font-weight: bold;
 			}
-			.dead {
-					text-decoration: line-through;
-					color: gray;
-			}
 		</style>
-
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap" rel="stylesheet">
+
 </head>
-<body class="container my-4">
+<!-- <body class="container my-4"> -->
+<body class="container my-4 d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
 
-	<h1 style="font-family: 'Cinzel Decorative', serif;"> INIATIVE ORDER</h1>
-
+	<h1 style="font-family: 'Cinzel Decorative', serif;
+						text-align: center;
+						font-size: 3rem;
+						letter-spacing: 2px;
+						text-shadow: 2px 2px 4px #000000;"> INIATIVE ORDER</h1>
+	<h4 style="text-align: center;
+						letter-spacing: 2px;"> ROUND: {{ round_count }}</h4>
 	<ol>
 		{% for combatant in initiative_list %}
 				<li class="

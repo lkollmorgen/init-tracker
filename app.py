@@ -7,6 +7,7 @@ app = Flask(__name__)
 #temp data store
 initiative_list = []
 current_turn = 0
+round_count = 1
 
 @app.route('/')
 def home():
@@ -15,7 +16,8 @@ def home():
 ###### json data helper functions
 def save_data():
 	with open(DATA_FILE, 'w') as f:
-			json.dump({'initiative_list': initiative_list, 'current_turn':current_turn},f)
+			json.dump({'initiative_list': initiative_list, 'current_turn':current_turn,
+								 'round_count':round_count},f)
 	
 def load_data():
 	global initiative_list, current_turn
@@ -24,19 +26,21 @@ def load_data():
 				data = json.load(f)
 				initiative_list = data['initiative_list']
 				current_turn = data['current_turn']
+				round_count = data['round_count']
 	except FileNotFoundError:
 		initiative_list = []
 		current_turn = 0
+		round_count = 1
 
 @app.route('/player')
 def player_view():
 	load_data()
-	return render_template('player.html', initiative_list = initiative_list, current_turn = current_turn)
+	return render_template('player.html', initiative_list = initiative_list, current_turn = current_turn, round_count= round_count)
 
 @app.route('/admin')
 def admin_view():
 	load_data()
-	return render_template('admin.html', initiative_list=initiative_list, current_turn=current_turn)
+	return render_template('admin.html', initiative_list=initiative_list, current_turn=current_turn, round_count=round_count)
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -51,9 +55,11 @@ def add():
 @app.route('/next')
 def next_turn():
 	load_data()
-	global current_turn
+	global current_turn, round_count
 	if initiative_list:
 		current_turn = (current_turn + 1) % len(initiative_list)
+		if current_turn == 0:
+			round_count += 1	
 		save_data()
 	return redirect (url_for('admin_view'))
 
@@ -80,9 +86,10 @@ def delete(name):
 
 @app.route('/reset')
 def reset():
-	global initiative_list, current_turn
+	global initiative_list, current_turn, round_count
 	initiative_list = []
 	current_turn = 0
+	round_count = 1
 	return redirect(url_for('admin_view'))
 
 if __name__ == '__main__':

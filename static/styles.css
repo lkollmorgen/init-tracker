@@ -2,3 +2,14 @@
 		text-decoration: line-through;
 		color:gray;
 }
+
+ol {
+		list-style-position: inside;
+		padding: 0;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+li {
+		margin: 10px 0;
+	}
