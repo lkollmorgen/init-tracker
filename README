@@ -2,4 +2,5 @@ TODO
 -[`x`] automatically update page at every global change
 -[`x`] make 'vertical view' so we can place a tablet upright and everyone can see in large letters/nums
 -[`x`] make a round counter to keep track of rounds
--[] add a note-tracker to keep track of debuffs and such
+-[`x`] add a note-tracker to keep track of debuffs and such
+-[] create some kind of log-in system so that diff DMs can use my tool

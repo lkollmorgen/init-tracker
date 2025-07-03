@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 #temp data store
 initiative_list = []
+notes = []
 current_turn = 0
 round_count = 1
 
@@ -17,7 +18,7 @@ def home():
 def save_data():
 	with open(DATA_FILE, 'w') as f:
 			json.dump({'initiative_list': initiative_list, 'current_turn':current_turn,
-								 'round_count':round_count},f)
+								 'round_count':round_count,'notes':notes},f)
 	
 def load_data():
 	global initiative_list, current_turn
@@ -25,22 +26,24 @@ def load_data():
 		with open(DATA_FILE, 'r') as f:
 				data = json.load(f)
 				initiative_list = data['initiative_list']
+				notes = data['notes']
 				current_turn = data['current_turn']
 				round_count = data['round_count']
 	except FileNotFoundError:
 		initiative_list = []
+		notes = []
 		current_turn = 0
 		round_count = 1
 
 @app.route('/player')
 def player_view():
 	load_data()
-	return render_template('player.html', initiative_list = initiative_list, current_turn = current_turn, round_count= round_count)
+	return render_template('player.html', initiative_list = initiative_list, current_turn = current_turn, round_count= round_count, notes=notes)
 
 @app.route('/admin')
 def admin_view():
 	load_data()
-	return render_template('admin.html', initiative_list=initiative_list, current_turn=current_turn, round_count=round_count)
+	return render_template('admin.html', initiative_list=initiative_list, current_turn=current_turn, round_count=round_count, notes=notes)
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -49,6 +52,14 @@ def add():
 	initiative = int(request.form['initiative'])
 	initiative_list.append({'name': name, 'initiative': initiative, 'status': 'alive'})
 	initiative_list.sort(key=lambda x: x['initiative'], reverse=True)
+	save_data()
+	return redirect(url_for('admin_view'))
+
+@app.route('/add_note', methods=['POST'])
+def add_note():
+	load_data()
+	note = request.form['note']
+	notes.append(note)
 	save_data()
 	return redirect(url_for('admin_view'))
 
@@ -86,10 +97,20 @@ def delete(name):
 
 @app.route('/reset')
 def reset():
-	global initiative_list, current_turn, round_count
+	load_data()
+	global initiative_list, current_turn, round_count, notes
 	initiative_list = []
+	notes = []
 	current_turn = 0
 	round_count = 1
+	save_data()
+	return redirect(url_for('admin_view'))
+
+@app.route('/clear_notes')
+def clear_notes():
+	global notes
+	notes = []
+	save_data()
 	return redirect(url_for('admin_view'))
 
 if __name__ == '__main__':
