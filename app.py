@@ -24,12 +24,19 @@ def load_data():
 	global initiative_list, current_turn, notes
 	try:
 		with open(DATA_FILE, 'r') as f:
-				data = json.load(f)
-				initiative_list = data['initiative_list']
-				notes = data['notes']
-				current_turn = data['current_turn']
-				round_count = data['round_count']
-	except FileNotFoundError:
+				content = f.read().strip()
+				if not content:
+					initiative_list = []
+					notes = []
+					current_turn = 0
+					rount_count = 1
+				else:
+					data = json.load(f)
+					initiative_list = data['initiative_list']
+					notes = data['notes']
+					current_turn = data['current_turn']
+					round_count = data['round_count']
+	except (FileNotFoundError, json.JSONDecodeError):
 		initiative_list = []
 		notes = []
 		current_turn = 0
