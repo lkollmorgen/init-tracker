@@ -21,7 +21,7 @@ def save_data():
 								 'round_count':round_count,'notes':notes},f)
 	
 def load_data():
-	global initiative_list, current_turn
+	global initiative_list, current_turn, notes
 	try:
 		with open(DATA_FILE, 'r') as f:
 				data = json.load(f)
