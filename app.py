@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 import json
+import os
+import threading
+
 DATA_FILE = 'initiative_data.json'
+data_lock = threading.Lock() #prevent simulitaneous read/write
 
 app = Flask(__name__)
 
@@ -16,32 +20,37 @@ def home():
 
 ###### json data helper functions
 def save_data():
-	with open(DATA_FILE, 'w') as f:
-			json.dump({'initiative_list': initiative_list, 'current_turn':current_turn,
-								 'round_count':round_count,'notes':notes},f)
-	
-def load_data():
-	global initiative_list, current_turn, notes
-	try:
-		with open(DATA_FILE, 'r') as f:
-				content = f.read().strip()
-				if not content:
-					initiative_list = []
-					notes = []
-					current_turn = 0
-					rount_count = 1
-				else:
-					data = json.load(f)
-					initiative_list = data['initiative_list']
-					notes = data['notes']
-					current_turn = data['current_turn']
-					round_count = data['round_count']
-	except (FileNotFoundError, json.JSONDecodeError):
-		initiative_list = []
-		notes = []
-		current_turn = 0
-		round_count = 1
+	temp_file = DATA_FILE + '.tmp'
+	with data_lock:
+		try:
+			with open(temp_file, 'w') as f:
+				json.dump({'initiative_list': initiative_list,
+								 'current_turn':current_turn,
+								 'round_count':round_count,
+								 'notes':notes
+				},f)
+			os.replace(temp_file, DATA_FILE)
+		except Exception as e:
+			print("Error saving data:", e)
 
+def load_data():
+    global initiative_list, current_turn, notes, round_count
+    with data_lock:
+        if not os.path.exists(DATA_FILE):
+            save_data()
+        try:
+            with open(DATA_FILE, 'r') as f:
+                data = json.load(f)
+                initiative_list = data.get('initiative_list', [])
+                current_turn = data.get('current_turn', 0)
+                round_count = data.get('round_count', 1)
+                notes = data.get('notes', [])
+        except json.JSONDecodeError as e:
+            print("Warning: JSON decode error:", e)
+            # Don’t overwrite or reset — keep current in-memory state
+        except Exception as e:
+            print("Error loading data:", e)
+	
 @app.route('/player')
 def player_view():
 	load_data()
