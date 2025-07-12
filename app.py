@@ -24,6 +24,7 @@ def save_data():
 	with data_lock:
 		try:
 			with open(temp_file, 'w') as f:
+				print('trying to make a temp file for data init')
 				json.dump({'initiative_list': initiative_list,
 								 'current_turn':current_turn,
 								 'round_count':round_count,
@@ -32,7 +33,6 @@ def save_data():
 			os.replace(temp_file, DATA_FILE)
 		except Exception as e:
 			print("Error saving data:", e)
-
 def load_data():
     global initiative_list, current_turn, notes, round_count
     with data_lock:
@@ -50,7 +50,7 @@ def load_data():
             # Don’t overwrite or reset — keep current in-memory state
         except Exception as e:
             print("Error loading data:", e)
-	
+
 @app.route('/player')
 def player_view():
 	load_data()
