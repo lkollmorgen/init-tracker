@@ -6,3 +6,20 @@ TODO
 -[] create some kind of log-in system so that diff DMs can use my tool
 -[] create a system to accept initiative from a .csv
 -[] fix error when there is not initiative_data.json starting file
+
+
+#### Neat tricks:
+```
+python -m tabnanny app.py
+```
+- this checks if your tabs are funkin
+
+```
+grep -rnw . -e "word to find"
+```
+gets you the lines in recursive search in current directory
+
+```
+grep -rl "word to find" .
+```
+gets you the file names only where this pattern shows up
