@@ -1,6 +1,1 @@
-{
-  "initiative_list": [],
-  "current_turn": 0,
-  "round_count": 1,
-  "notes": []
-}
+{"initiative_list": [{"name": "thoob", "initiative": 15, "status": "alive"}, {"name": "boblin", "initiative": 1, "status": "alive"}], "current_turn": 0, "round_count": 1, "notes": []}

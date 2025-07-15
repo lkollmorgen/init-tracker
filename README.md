@@ -1,11 +1,26 @@
-TODO
+# HELLO
+Welcome to our initiative tracker. Lots of updates coming soon
+
+### Directory
+- '/admin' - takes you to admin panel page to edit the initiative list and such
+- '/player' - players can waffle about on this page so they know when they'll need to act
+
+### CSV DESIGN
+```
+    name,initiative,status
+    Grod,1,alive
+    Boblin,25,alive
+    Murder Hobo,2,dead
+```
+
+### TODO
 -[`x`] automatically update page at every global change
 -[`x`] make 'vertical view' so we can place a tablet upright and everyone can see in large letters/nums
 -[`x`] make a round counter to keep track of rounds
 -[`x`] add a note-tracker to keep track of debuffs and such
--[] create some kind of log-in system so that diff DMs can use my tool
--[] create a system to accept initiative from a .csv
--[] fix error when there is not initiative_data.json starting file
+-[`x`] create a system to accept initiative from a .csv
+-[`x`] fix error when there is not initiative\_data.json starting file
+-[] fix up UI (it's hideous)
 
 
 #### Neat tricks:

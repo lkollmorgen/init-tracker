@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import json
 import os
 import threading
+import csv
 
 DATA_FILE = 'initiative_data.json'
 data_lock = threading.Lock() #prevent simulitaneous read/write
@@ -48,26 +49,55 @@ def save_data():
         except Exception as e:
             print("Error saving data:", e)
 
+def import_csv(filename):
+    """load combatants from .csv if you please"""
+    global initiative_list
+    initiative_list = []
+
+    try:
+        with open(filename, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                initiative_list.append({
+                    'name': row['name'],
+                    'initiative': int(row['initiative']),
+                    'status': row.get('status', 'alive') #defult to alive
+                })
+            initiative_list.sort(key=lambda x: x['initiative'], reverse=True)
+            print("loaded .csv file")
+    except FileNotFoundError:
+        print(f"no csv file found: {filename}")
+    except Exception as e:
+        print(f"error importing csv: {e}")
+
 def load_data():
     global initiative_list, current_turn, notes, round_count
-    with data_lock:     
-        try:
-            with open(DATA_FILE, 'r') as f:
-                    data = json.load(f)
-                    initiative_list = data.get('initiative_list', [])
-                    current_turn = data.get('current_turn', 0)
-                    round_count = data.get('round_count', 1)
-                    notes = data.get('notes', [])
-
-        except json.JSONDecodeError as e:
-            print("Warning: JSON decode error:", e)
+    with data_lock:
+        if os.path.exists(DATA_FILE):
+            try:
+                with open(DATA_FILE, 'r') as f:
+                        data = json.load(f)
+                        initiative_list = data.get('initiative_list', [])
+                        current_turn = data.get('current_turn', 0)
+                        round_count = data.get('round_count', 1)
+                        notes = data.get('notes', [])
+                return
+            except json.JSONDecodeError as e:
+                print("Warning: JSON decode error:", e)
+            except Exception as e:
+                print("Error loading data:", e)
+        
+        if os.path.exists('initiative.csv'):
+            print('found initiative.csv, importing peeps')
+            import_csv('initiative.csv')
+            save_data()
+        else:
+            print('no data file found, initializing empty state')
             initiative_list.clear()
             current_turn = 0
             round_count = 1
             notes.clear()
             save_data()
-        except Exception as e:
-            print("Error loading data:", e)
 
 init_data_file()
 
@@ -147,6 +177,24 @@ def clear_notes():
     global notes
     notes = []
     save_data()
+    return redirect(url_for('admin_view'))
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    if 'file' not in request.files:
+        print("no file part in request")
+        return redirect(url_for('admin_view'))
+
+    file = request.files['file']
+    if file.filename == '':
+        print('no selected file')
+        return redirect(url_for('admin_view'))
+    if file and file.filename.endswith('.csv'):
+        filepath = os.path.join('uploads', file.filename)
+        file.save(filepath)
+        print(f"uploaded csv file: {filepath}")
+        import_csv(filepath)
+        save_data()
     return redirect(url_for('admin_view'))
 
 if __name__ == '__main__':
