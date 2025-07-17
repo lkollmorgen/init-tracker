@@ -70,6 +70,27 @@ def import_csv(filename):
     except Exception as e:
         print(f"error importing csv: {e}")
 
+@app.route('/export')
+def export_initiative():
+    load_data()
+
+    # create an in-memory CSV file
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Name','Initiative', 'Status'])
+    for combatant in initiative_list:
+        writer.writerow([combatant['name'], combatant['initiative'], combatant['status']])
+
+    # move cursor back 2 the start
+    output.seek(0)
+
+    return send_file(
+            io.BytesIO(output.getvalue().encode()),
+            mimetype='tet/csv',
+            as_attachement=True,
+            download_name='initiative_export.csv'
+    )
+
 def load_data():
     global initiative_list, current_turn, notes, round_count
     with data_lock:

@@ -1,5 +1,7 @@
 import pytest
 from app import app
+import io
+
 
 @pytest.fixture
 def client():
@@ -24,3 +26,17 @@ def test_add_combatant(client):
 	response = client.post('/add', data={'name': 'Boblin', 'initiative': 12}, follow_redirects=True)
 	assert response.status_code == 200
 	assert b'Boblin' in response.data
+
+def test_csv_upload(client):
+    """Test uploading csv combatans"""
+    csv_content = (
+            "name,initiative,status\n"
+            "csv man!,15,alive\n"
+    )
+    data = {
+            'file': (io.BytesIO(csv_content.encode()), 'test.csv')
+    }
+    response = client.post('/upload_csv', data=data, content_type='multipart/form-data', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'csv man!' in response.data
+

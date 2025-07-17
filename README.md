@@ -14,16 +14,25 @@ Welcome to our initiative tracker. Lots of updates coming soon
 ```
 
 ### TODO
--[`x`] automatically update page at every global change
--[`x`] make 'vertical view' so we can place a tablet upright and everyone can see in large letters/nums
--[`x`] make a round counter to keep track of rounds
--[`x`] add a note-tracker to keep track of debuffs and such
--[`x`] create a system to accept initiative from a .csv
--[`x`] fix error when there is not initiative\_data.json starting file
--[] fix up UI (it's hideous)
+
+- [`x`] automatically update page at every global change
+- [`x`] make 'vertical view' so we can place a tablet upright and everyone can see in large letters/nums
+- [`x`] make a round counter to keep track of rounds
+- [`x`] add a note-tracker to keep track of debuffs and such
+- [`x`] create a system to accept initiative from a .csv
+- [`x`] fix error when there is not initiative\_data.json starting file
+- [`x`] add pytest for csv imports
+- [] fix up UI (it's hideous)
+- [`x`] allow for csv exports
+- [] include timestamp in export filename **i can do this on my OWN**
 
 
 #### Neat tricks:
+```
+cat file_to_copy.txt | clip.exe
+```
+- this copies the contents of this file to the clipboad
+
 ```
 python -m tabnanny app.py
 ```
