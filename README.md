@@ -24,7 +24,7 @@ Welcome to our initiative tracker. Lots of updates coming soon
 - [`x`] add pytest for csv imports
 - [] fix up UI (it's hideous)
 - [`x`] allow for csv exports
-- [] include timestamp in export filename **i can do this on my OWN**
+- [`x`] include timestamp in export filename **i can do this on my OWN**
 
 
 #### Neat tricks:

@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 import json
 import os
 import threading
 import csv
+import io
+from datetime import datetime
 
 DATA_FILE = 'initiative_data.json'
 data_lock = threading.Lock() #prevent simulitaneous read/write
@@ -74,6 +76,10 @@ def import_csv(filename):
 def export_initiative():
     load_data()
 
+    # get date/time
+    current_datetime = datetime.now()
+    current_date = str(current_datetime.date())
+
     # create an in-memory CSV file
     output = io.StringIO()
     writer = csv.writer(output)
@@ -81,14 +87,15 @@ def export_initiative():
     for combatant in initiative_list:
         writer.writerow([combatant['name'], combatant['initiative'], combatant['status']])
 
+    writer.writerow(notes)
     # move cursor back 2 the start
     output.seek(0)
 
     return send_file(
             io.BytesIO(output.getvalue().encode()),
             mimetype='tet/csv',
-            as_attachement=True,
-            download_name='initiative_export.csv'
+            as_attachment=True,
+            download_name='initiative_'+current_date+'.csv'
     )
 
 def load_data():
