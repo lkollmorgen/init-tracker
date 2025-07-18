@@ -24,8 +24,12 @@
 						font-size: 3rem;
 						letter-spacing: 2px;
 						text-shadow: 2px 2px 4px #000000;">INITIATIVE ORDER</h1>
-	<h4 style="text-align: center;
-						letter-spacing: 2px;"> ROUND: {{ round_count }}</h4>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <div class="round-container">
+           <div class="round-text">
+               ROUND: {{ round_count }}
+           </div>
+    </div>
 	<ol>
 		{% for combatant in initiative_list %}
 				<li class="
