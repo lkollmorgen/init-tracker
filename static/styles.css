@@ -12,10 +12,8 @@ ol {
 
 li {
 		margin: 10px 0;
+        font-family: "Verdana", Sans-Serif;
 	}
-h1 {
-    margin-bottom: -60px;
-}
 .round-container {
     display: flex;
     justify-content: center;
@@ -29,6 +27,7 @@ h1 {
     position: relative;
     margin-top: 0;
     padding-top: 0;
+    margin-bottom: -90px;
 }
 .round-text {
     font-family: 'Cinzel Decorative', serif;

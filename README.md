@@ -14,7 +14,7 @@ Welcome to our initiative tracker. Lots of updates coming soon
 ```
 
 ### TODO
-
+version 0.0
 - [`x`] automatically update page at every global change
 - [`x`] make 'vertical view' so we can place a tablet upright and everyone can see in large letters/nums
 - [`x`] make a round counter to keep track of rounds
@@ -25,7 +25,9 @@ Welcome to our initiative tracker. Lots of updates coming soon
 - [] fix up UI (it's hideous)
 - [`x`] allow for csv exports
 - [`x`] include timestamp in export filename **i can do this on my OWN**
-
+version 1.0
+- [] fix CONSTANT refreshing on player view page
+- [] button to go to admin page from player page
 
 #### Neat tricks:
 ```

@@ -23,7 +23,8 @@
 						text-align: center;
 						font-size: 3rem;
 						letter-spacing: 2px;
-						text-shadow: 2px 2px 4px #000000;">INITIATIVE ORDER</h1>
+						text-shadow: 2px 2px 4px #000000;
+                        margin-bottom: -60px">INITIATIVE ORDER</h1>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <div class="round-container">
            <div class="round-text">
@@ -41,6 +42,10 @@
 		{% endfor %}
 	</ol>
 
+<div class="mt-3" style="padding:10px;
+                         font-size: 1rem">
+         <a href="/admin" class="btn btn-secondary d-block mx-auto my-2"> Go to Admin View</a>
+</div>
 <!-- this is my notes section -->
 	<p style="text-align: center;
 						 font-size: 1rem;"> NOTES:</p>
@@ -57,6 +62,7 @@
 					location.reload();
 			}, 1000);	//auto refresh
 	</script>
+
 
 </body>
 </html>
