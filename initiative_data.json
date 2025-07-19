@@ -1,1 +1,1 @@
-{"initiative_list": [], "current_turn": 0, "round_count": 1, "notes": []}
+{"initiative_list": [{"name": "jesse", "initiative": 5, "status": "dead"}], "current_turn": 0, "round_count": 3, "notes": ["notes 1"]}

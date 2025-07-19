@@ -129,6 +129,14 @@ def load_data():
 
 init_data_file()
 
+@app.route('/player_data')
+def player_data():
+    load_data()
+    return {
+            "initiative_list": initiative_list,
+            "round_count": round_count
+    }
+
 @app.route('/player')
 def player_view():
     load_data()

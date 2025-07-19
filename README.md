@@ -26,8 +26,9 @@ version 0.0
 - [`x`] allow for csv exports
 - [`x`] include timestamp in export filename **i can do this on my OWN**
 version 1.0
-- [] fix CONSTANT refreshing on player view page
-- [] button to go to admin page from player page
+- [`x`] fix CONSTANT refreshing on player view page
+- [`x`] button to go to admin page from player page
+- [] integrate notes in javascript
 
 #### Neat tricks:
 ```

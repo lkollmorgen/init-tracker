@@ -26,12 +26,12 @@
 						text-shadow: 2px 2px 4px #000000;
                         margin-bottom: -60px">INITIATIVE ORDER</h1>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <div class="round-container">
+    <div class="round-container" id="round-count">
            <div class="round-text">
-               ROUND: {{ round_count }}
+               ROUND: <span id="round-number">{{ round_count }}</span>
            </div>
     </div>
-	<ol>
+	<ol id="initiative-list">
 		{% for combatant in initiative_list %}
 				<li class="
 						{% if loop.index0 == current_turn %} current-turn {% endif %}
@@ -57,11 +57,36 @@
 				</li>
 	{% endfor %}
 
-	<script>
-			setInterval(function() {
-					location.reload();
-			}, 1000);	//auto refresh
-	</script>
+    <script>
+        function refreshInitiative() {
+                    fetch('/player_data')
+                        .then(response => response.json())
+                        .then(data => {
+                            //update round count
+                            document.getElementById('round-number').innerText = data.round_count;
+                            const list = document.getElementById('initiative-list');
+                            list.innerHTML = ''; //clear existing list
+                            data.initiative_list.forEach((combatant, index) => {
+                                 const li = document.createElement('li');
+                                        li.textContent = `${combatant.name} (${combatant.initiative})`;
+                                        
+                                        if (index === data.current_turn) {
+                                            li.classList.add('current-turn');
+                                            }
+                                        if (combatant.status === 'dead') {
+                                            li.style.textDecoration = 'line-through';
+                                        }
+
+                                        list.appendChild(li);
+                                    });
+                             })
+                             .catch(error => console.error('error fetching player data:', error));
+               }
+        setInterval(refreshInitiative, 2000);
+
+        //initial load
+        refreshInitiative();
+    </script>
 
 
 </body>
