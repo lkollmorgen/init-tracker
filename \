@@ -2,16 +2,21 @@ from flask import Flask, render_template, request, redirect, url_for, send_file,
 import json
 import os
 import threading
-import time
 import csv
 import io
-from datetime import datetime, timedelta
+from datetime import datetime
 import random, string
 
 DATA_FILE = 'initiative_data.json'
 data_lock = threading.Lock() #prevent simulitaneous read/write
 
 app = Flask(__name__)
+
+#temp data store
+#initiative_list = []
+#notes = []
+#current_turn = 0
+#round_count = 1
 
 # session tracking
 app.secret_key = 'supersecretkey'
@@ -36,11 +41,10 @@ def create_session():
                 'initiative_list': [],
                 'notes': [],
                 'current_turn': 0,
-                'round_count': 1,
-                'last_active': datetime.utcnow().isoformat()
+                'round_count': 1
                 }
+    session['join_code'] = code
     print(f'session created! Code: {code}')
-    save_data()
     return redirect(url_for('admin_view', code=code))
 
 @app.route('/join_session', methods=['POST'])
@@ -51,20 +55,19 @@ def join_session():
     else:
         return render_template('landing.html', error='Invalid code')
 
-def init_data_file(code):
-    """create a fully validated data file if it doesn't exist yet"""
-    if not os.path.exists(DATA_FILE):
-        print("initializing data file with defaults")
-        default_data = {code: {
-		    'initiative_list': [],
-		    'current_turn': 0,
-		    'round_count': 1,
-		    'notes': []
-        }}
-        with open(DATA_FILE, 'w') as f:
-            json.dump(default_data, f, indent=2)
-    else:
-        return
+def init_data_file():
+	"""create a fully validated data file if it doesn't exist yet"""
+	#if not os.path.exists(DATA_FILE):
+	print("initializing data file with defaults")
+	default_data = {
+		'initiative_list': [],
+		'current_turn': 0,
+		'round_count': 1,
+		'notes': []
+	}
+		
+	with open(DATA_FILE, 'w') as f:
+		json.dump(default_data, f, indent=2)
 
 @app.route('/')
 def home():
@@ -72,42 +75,43 @@ def home():
 
 ###### json data helper functions
 def save_data():
+    if not DATA_FILE:
+        print('initializing json')
+        json.dump(sessions, f, indent=2)
     temp_file = DATA_FILE + '.tmp'
+    print(temp_file)
     with data_lock:
         try:
             with open(temp_file, 'w') as f:
+                print('trying to make a temp file for data init')
                 json.dump(sessions, f, indent=2)
-            
             os.replace(temp_file, DATA_FILE)
-            print('Replaced data file w/ temp file')
         except Exception as e:
             print("Error saving data:", e)
 
 def import_csv(code, filename):
     """load combatants from .csv if you please"""
-    touch_session(code)
-    game = sessions.get(code)
+    game = session.get(code)
     if not game:
         return "session not found ):", 404
     try:
         with open(filename, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                row = {k.lower(): v for k, v in row.items()}
                 game['initiative_list'].append({
                     'name': row['name'],
                     'initiative': int(row['initiative']),
                     'status': row.get('status', 'alive') #defult to alive
                 })
             game['initiative_list'].sort(key=lambda x: x['initiative'], reverse=True)
+            print("loaded .csv file")
     except FileNotFoundError:
         print(f"no csv file found: {filename}")
     except Exception as e:
         print(f"error importing csv: {e}")
 
-@app.route('/<code>/export_initiative', methods=['POST'])
+@app.route('/<code>/export')
 def export_initiative(code):
-    touch_session(code)
     game = sessions.get(code)
     if not game:
         return "session not found ):", 404
@@ -118,11 +122,11 @@ def export_initiative(code):
     # create an in-memory CSV file
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(['name','initiative', 'status'])
+    writer.writerow(['Name','Initiative', 'Status'])
     for combatant in game['initiative_list']:
         writer.writerow([combatant['name'], combatant['initiative'], combatant['status']])
 
-    writer.writerow(game['notes'])
+    writer.writerow(notes)
     # move cursor back 2 the start
     output.seek(0)
 
@@ -139,7 +143,7 @@ def load_data():
         if os.path.exists(DATA_FILE):
             try:
                 with open(DATA_FILE, 'r') as f:
-                    sessions = json.load(f)
+                        sessions = json.load(f)
                 return
             except json.JSONDecodeError as e:
                 print("Warning: JSON decode error:", e)
@@ -148,31 +152,14 @@ def load_data():
         
         if os.path.exists('initiative.csv'):
             print('found initiative.csv, importing peeps')
-            import_csv(code, 'initiative.csv')
+            import_csv('initiative.csv')
             save_data()
         else:
             print('no data file found, initializing empty state')
             sessions = {}
             save_data()
 
-def touch_session(code):
-    if code in sessions:
-        sessions[code]['last_active'] = datetime.utcnow().isoformat()
-
-def cleanup_sessions(timeout_minutes=30):
-    while True:
-        time.sleep(300) # every 5 mins
-        now = datetime.utcnow()
-        expired = []
-        with sessions_lock:
-            for code, session_data in list(sessions.item()):
-                last_active = datetime.fromisoformat(session_data.get('last_active',now.isoformat()))
-                if now - last_active > timedelta(minutes=timeout_minutes):
-                    expired.append(code)
-            for code in expired:
-                print(f"Cleaning up exired session: {code}")
-                del sessions[code]
-
+#init_data_file()
 
 @app.route('/player_data/<code>')
 def player_data(code):
@@ -183,13 +170,11 @@ def player_data(code):
             'initiative_list': game['initiative_list'],
             'current_turn': game['current_turn'],
             'round_count': game['round_count'],
-            'notes': game['notes'],
-            code:code
+            'notes': game['notes']
     })
 
 @app.route('/player/<code>')
 def player_view(code):
-    touch_session(code)
     game = sessions.get(code)
     if not game:
         return "Session not found ):", 404
@@ -202,9 +187,6 @@ def player_view(code):
 
 @app.route('/admin/<code>')
 def admin_view(code):
-    touch_session(code)
-    if not os.path.exists(DATA_FILE):
-        init_data_file()
     game = sessions.get(code)
     if not game:
         return 'Session not found ):', 404
@@ -219,23 +201,18 @@ def admin_view(code):
 
 @app.route('/<code>/add', methods=['POST'])
 def add(code):
-    touch_session(code)
-    load_data()
     game = sessions.get(code)
-    print(sessions)
-    #if not game:
-    #    return "Session not found ):", 404
+    if not game:
+        return "Session not found ):", 404
     name = request.form['name']
     initiative = int(request.form['initiative'])
-    print(name, initiative)
-    sessions.get(code)['initiative_list'].append({'name': name, 'initiative': initiative, 'status': 'alive'})
-    sessions.get(code)['initiative_list'].sort(key=lambda x: x['initiative'], reverse=True)
+    game['initiative_list'].append({'name': name, 'initiative': initiative, 'status': 'alive'})
+    game['initiative_list'].sort(key=lambda x: x['initiative'], reverse=True)
     save_data()
     return redirect(url_for('admin_view',code=code))
 
 @app.route('/<code>/add_note', methods=['POST'])
 def add_note(code):
-    touch_session(code)
     game = sessions.get(code) 
     if not game:
         return "Session not found ):", 404
@@ -246,12 +223,9 @@ def add_note(code):
 
 @app.route('/<code>/next', methods=['POST'])
 def next_turn(code):
-    touch_session(code)
     game = sessions.get(code)
     if not game:
         return "session not found ):", 404
-    if len(game['initiative_list']) == 0:
-        return redirect(url_for('admin_view', code=code))
     game['current_turn'] = (game['current_turn'] + 1) % len(game['initiative_list'])
     if game['current_turn'] == 0:
         game['round_count'] += 1
@@ -260,7 +234,6 @@ def next_turn(code):
 
 @app.route('/<code>/dead/<name>', methods=['POST'])
 def dead(code, name):
-    touch_session(code)
     game = sessions.get(code)
     if not game:
         return "session not found ):", 404
@@ -273,7 +246,6 @@ def dead(code, name):
 
 @app.route('/<code>/delete/<name>', methods=['POST'])
 def delete(code, name):
-    touch_session(code)
     game = sessions.get(code)
     if not game:
         return "session not found ):", 404
@@ -285,8 +257,6 @@ def delete(code, name):
 
 @app.route('/<code>/reset', methods=['POST'])
 def reset(code):
-    touch_session(code)
-    load_data()
     game = sessions.get(code)
     if not game:
         return "session not found ):", 404
@@ -299,20 +269,13 @@ def reset(code):
 
 @app.route('/<code>/clear_notes', methods=['POST'])
 def clear_notes(code):
-    print('trying to reset')
-    game = sessions.get(code)
-    if not game:
-        return "session not found ):", 404
-    game['notes'] = []
+    global notes
+    notes = []
     save_data()
     return redirect(url_for('admin_view',code=code))
 
 @app.route('/<code>/upload_csv', methods=['POST'])
 def upload_csv(code):
-    print('trying to reset')
-    game = sessions.get(code)
-    if not game:
-        return "session not found ):", 404
     if 'file' not in request.files:
         print("no file part in request")
         return redirect(url_for('admin_view',code=code))
@@ -330,5 +293,4 @@ def upload_csv(code):
     return redirect(url_for('admin_view',code=code))
 
 if __name__ == '__main__':
-    threading.Thread(target=cleanup_sessions, daemon=True).start()
     app.run(debug=True)

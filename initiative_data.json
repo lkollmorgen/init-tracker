@@ -1,1 +1,9 @@
-{"initiative_list": [{"name": "jesse", "initiative": 5, "status": "dead"}], "current_turn": 0, "round_count": 3, "notes": ["notes 1"]}
+{
+  "LRXL": {
+    "initiative_list": [],
+    "notes": [],
+    "current_turn": 0,
+    "round_count": 1,
+    "last_active": "2025-08-05T21:39:18.601718"
+  }
+}

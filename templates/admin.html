@@ -9,8 +9,8 @@
 <!-- <body class="container my-4"> -->
  <body class="container my-4 d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
 		<h1>Admin Panel - Initiative Tracker</h1>
-
-		<form method="post" action="/add" class="mb-3">
+        <p style="font-size: 1rem;">Session code: <strong>{{ code }}</strong></p>
+        <form action="/{{ code }}/add" method="post" class="mb-3">
 		<div class="row">
 			<div class="col">
 				<input name="name" placeholder="Name" class="form-control" required>
@@ -28,66 +28,69 @@
 <ol>
 		{% for combatant in initiative_list %}
 			{% set i = loop.index0 %}
-			<li class="
-					{% if i == current_turn %}fw-bold text-danger {% endif %}
-					{% if combatant.status == 'dead' %}dead{% endif %}
-			">
-				{% if -5 <= combatant.initiative <= 25 %}
-					{{ combatant.name}} ({{ combatant.initiative }})
-				{% else %}
-					{{ combatant.name}} ({{ combatant.initiative }} really?🙄)
-				{% endif %}
-				
-
-				{% if combatant.status != 'dead' %}
-						<a href="{{ url_for('dead', name=combatant.name) }}" class="btn btn-sm btn-warning ms-2">Dead</a> {% endif %}
-			<a href="{{ url_for('delete', name=combatant.name) }}" class="btn btn-sm btn-danger ms-2">Delete</a>
-			</li>
+            <div class="combatant-entry 
+                         {% if combatant.status == 'dead' %}dead{% endif %}">
+                
+			    <span class="{% if i == current_turn %}highlight-turn{% endif %}">
+                    {{ loop.index }}. {{ combatant.name }} ({{ combatant.initiative }})
+                </span>
+				<form action="/{{ code }}/delete/{{ combatant.name }}" method="post">
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+                
+                <form action="/{{ code }}/dead/{{ combatant.name }}" method="post">
+                    <button class="btn btn-danger btn-sm">
+                        {{ 'Alive' if combatant.status == 'dead' else 'Dead' }}
+                    </button>
+                </form>
+        </div>
 			{% endfor %}
 </ol>
 
-<div class="mt-3" style="padding: 10px;">
-		<a href="/next" class="btn btn-success d-block mx-auto my-2">Next Turn</a>
-</div>
-<div class="mt-3" style="padding: 10px;">
-		<a href="/reset" class="btn btn-danger d-block mx-auto my-2">Reset</a>
-</div>
+<form action="/{{ code }}/next" method="post">
+    <button type="submit" class="btn btn-success">Next Turn</button>
+</form>
+
+<form action="/{{ code }}/reset" method="post">
+    <button type="submit" class="btn btn-danger btn-sm">Reset</button>
+</form>
 
 <!--- import from csv stuff -->
 <div class="mt-3" style="padding:10px;">
 
-    <form action="/upload_csv" method="post" enctype="multipart/form-data">
-        <label for="csvfile">import combatants (csv):</label>
+    <form action="/{{ code }}/upload_csv" method="post" enctype="multipart/form-data">
+        <label for="csvfile" style="font-size: 1rem;">Import combatants (csv):</label>
         <input type="file" name="file" id="csvfile" accept=".csv" required>
-        <button type="submit">upload</button>
+        <button type="submit">Upload</button>
     </form>
 
 </div>
 
 <!--- export current initiative -->
-<div class ="mt-3" style="padding:10px;">
-    <a href="{{ url_for('export_initiative') }}" class="btn btn-success my-2">Export Initiative List</a>
-</div>
+<form action="/{{ code }}/export_initiative" method="post">
+    <button type="submit" class="btn btn-danger btn-sm">Export</button>
+</form>
 
-<div class="mt-3" style="padding:10px;">
-		<a href="/player" class="btn btn-secondary d-block mx-auto my-2"> Go to Player View</a>
-</div>
+<form action="/player/{{ code }}" method="post">
+ <button class="btn btn-danger btn-sm">Go to Player View</button>
+</form>
 
 <!-- notes methods -->
-<form method="post" action="/add_note" class="mb-3">
+<form method="post" action="/{{ code }}/add_note" class="mb-3">
 		<div class="row">
 			<div class="col">
 				<input name="note" placeholder="Note" class="form-control" required>
-				</div>
-
-<div class="mt-3" style="padding: 10px;">
-		<a href="/clear_notes" class="btn btn-success d-block mx-auto my-2">Clear Notes</a>
-</div>
+                <button type="submit" class="btn btn-danger btn-sm">Add Note</button>
+</form>
+                <form method="post" action="/{{ code }}/clear_notes" class="mb-3">
+                    <button class="btn btn-danger btn-sm">Clear Notes</button>
+                </form>
+            </div>
 <!-- this is my notes section -->
    <p style="text-align: center;
               font-size: 1rem;"> NOTES:</p>
    {% for note in notes %}
-       <li style="font-size: 1rem;
+       <li style="font-size: 1.5rem;
                   padding: 0;
                   margin: 0;">
          {{ note }}

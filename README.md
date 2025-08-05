@@ -4,6 +4,7 @@ Welcome to our initiative tracker. Lots of updates coming soon
 ### Directory
 - '/admin' - takes you to admin panel page to edit the initiative list and such
 - '/player' - players can waffle about on this page so they know when they'll need to act
+-'/landing' - visitors can start a new session or join another session
 
 ### CSV DESIGN
 ```
@@ -28,8 +29,7 @@ version 0.0
 version 1.0
 - [`x`] fix CONSTANT refreshing on player view page
 - [`x`] button to go to admin page from player page
-- [] integrate notes in javascript
-
+- ['x'] create a join code like in jackbox so people can host united sessions
 #### Neat tricks:
 ```
 cat file_to_copy.txt | clip.exe
