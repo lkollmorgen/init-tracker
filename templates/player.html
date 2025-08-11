@@ -42,21 +42,24 @@
 		{% endfor %}
 	</ol>
 
-<div class="mt-3" style="padding:10px;
-                         font-size: 1rem">
-    <a href="/admin/{{ code }}" class="btn btn-secondary d-block mx-auto my-2"> Go to Admin View</a>
-</div>
-<p style="font-size: 1rem;">Session code: <strong>{{ code }}</strong></p>
+<form action="/admin/{{ code }}">
+    <button class="btn btn-danger btn-sm">Go to Admin View</button>
+</form>
+
+
+<p style="font-size: 1.5rem;">Session code: <strong>{{ code }}</strong></p>
 <!-- this is my notes section -->
 	<p style="text-align: center;
-						 font-size: 1rem;"> NOTES:</p>
-	{% for note in notes %}
+						 font-size: 1.5rem;"> NOTES:</p>
+    <ul id="notes-list">
+        {% for note in notes %}
 			<li style="font-size: 1rem;
 								 padding: 0;
 								 margin: 0;">
 				{{ note }}
-				</li>
+			</li>
 	{% endfor %}
+    </ul>
 
     <script>
         function refreshInitiative() {
@@ -80,6 +83,16 @@
 
                                         list.appendChild(li);
                                     });
+                                    const notesList = document.getElementById('notes-list');
+                                    notesList.innerHTML = '';
+                                    data.notes.forEach(note => {
+                                                const li = document.createElement('li');
+                                                li.style.fontsize = "1rem";
+                                                li.style.padding = "0";
+                                                li.style.margin = "0";
+                                                li.textContent = note;
+                                                notesList.appendChild(li);
+                                            });
                              })
                              .catch(error => console.error('error fetching player data:', error));
                }

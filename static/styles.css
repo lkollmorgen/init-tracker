@@ -15,9 +15,11 @@ input, button {
     border: none;
 }
 
-/*button {
-    width: 10%;
-}*/
+button {
+    background-color: #fe0000;
+    color: white;
+    cursor: pointer;
+ }
 
 a:visited {
     color: lightblue;
@@ -45,7 +47,7 @@ ol {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: url("/static/backgROUND1.png") no-repeat center center;
+    background: url("/static/dice2.png") no-repeat center center;
     background-size: contain;
     width: 80%;
     max-width: 600px;

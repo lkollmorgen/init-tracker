@@ -6,7 +6,13 @@ Welcome to our initiative tracker. Lots of updates coming soon
 - '/player' - players can waffle about on this page so they know when they'll need to act
 -'/landing' - visitors can start a new session or join another session
 
-### CSV DESIGN
+### USAGE
+- You can create a new session (as a DM) or you can join a DM's session using their join code
+- A DM's session will timeout after 30m of no changes
+- You can add players to initiative, kill them, delete theme, and export the session to a csv
+
+
+### CSV DESIGN (if importing or exporting)
 ```
     name,initiative,status
     Grod,1,alive
@@ -23,13 +29,18 @@ version 0.0
 - [`x`] create a system to accept initiative from a .csv
 - [`x`] fix error when there is not initiative\_data.json starting file
 - [`x`] add pytest for csv imports
-- [] fix up UI (it's hideous)
+- ['x'] fix up UI (it's hideous)
 - [`x`] allow for csv exports
 - [`x`] include timestamp in export filename **i can do this on my OWN**
 version 1.0
 - [`x`] fix CONSTANT refreshing on player view page
 - [`x`] button to go to admin page from player page
 - ['x'] create a join code like in jackbox so people can host united sessions
+- ['x'] fix player_view methods=post thing
+- [] run some stress tests to see how many games can function at once
+- [`x`] add my github *cringes*
+- [] fix the 'alive' button
+
 #### Neat tricks:
 ```
 cat file_to_copy.txt | clip.exe

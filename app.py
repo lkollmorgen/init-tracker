@@ -165,7 +165,7 @@ def cleanup_sessions(timeout_minutes=30):
         now = datetime.utcnow()
         expired = []
         with sessions_lock:
-            for code, session_data in list(sessions.item()):
+            for code, session_data in list(sessions.items()):
                 last_active = datetime.fromisoformat(session_data.get('last_active',now.isoformat()))
                 if now - last_active > timedelta(minutes=timeout_minutes):
                     expired.append(code)
