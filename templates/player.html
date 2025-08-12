@@ -62,6 +62,8 @@
     </ul>
 
     <script>
+        let warned = false;
+
         function refreshInitiative() {
                     fetch('/player_data/{{ code }}')
                         .then(response => response.json())
@@ -93,6 +95,15 @@
                                                 li.textContent = note;
                                                 notesList.appendChild(li);
                                             });
+                                    
+                                    //const expiry = new Data(data.expiry_time);
+                                    //const now = new Date();
+                                    //const timeLeft = expiry - now;
+
+                                    //if (timeLeft <= 5 * 60 * 1000 && !warned) {
+                                    //            warned = true;
+                                    //            alert("!!!! Your session will expire in 5 minutes!! Make sure to save your notes");
+                                            }
                              })
                              .catch(error => console.error('error fetching player data:', error));
                }

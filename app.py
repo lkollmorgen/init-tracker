@@ -41,6 +41,7 @@ def create_session():
                 }
     print(f'session created! Code: {code}')
     save_data()
+    touch_session(code)
     return redirect(url_for('admin_view', code=code))
 
 @app.route('/join_session', methods=['POST'])
@@ -79,7 +80,6 @@ def save_data():
                 json.dump(sessions, f, indent=2)
             
             os.replace(temp_file, DATA_FILE)
-            print('Replaced data file w/ temp file')
         except Exception as e:
             print("Error saving data:", e)
 
@@ -88,7 +88,7 @@ def import_csv(code, filename):
     touch_session(code)
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     try:
         with open(filename, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -110,7 +110,7 @@ def export_initiative(code):
     touch_session(code)
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     # get date/time
     current_datetime = datetime.now()
     current_date = str(current_datetime.date())
@@ -159,20 +159,39 @@ def touch_session(code):
     if code in sessions:
         sessions[code]['last_active'] = datetime.utcnow().isoformat()
 
-def cleanup_sessions(timeout_minutes=30):
+def cleanup_sessions(timeout_minutes=3, sleep_seconds=300):
+    print("[CLEANUP] Cleanup thread started")
     while True:
-        time.sleep(300) # every 5 mins
-        now = datetime.utcnow()
-        expired = []
-        with sessions_lock:
-            for code, session_data in list(sessions.items()):
-                last_active = datetime.fromisoformat(session_data.get('last_active',now.isoformat()))
-                if now - last_active > timedelta(minutes=timeout_minutes):
-                    expired.append(code)
-            for code in expired:
-                print(f"Cleaning up exired session: {code}")
-                del sessions[code]
+        try:
+            time.sleep(sleep_seconds) # every 5 mins
+            now = datetime.utcnow()
+            expired = []
 
+            with sessions_lock:
+                for code, session_data in list(sessions.items()):
+                    last_iso = session_data.get('last_active')
+                    try:
+                        last_active = datetime.fromisoformat(session_data.get('last_active',now.isoformat()))
+                    except Exception:
+                        last_active = now - timedelta(minutes=timeout_minutes + 1)
+
+                    if now - last_active > timedelta(minutes=timeout_minutes):
+                        expired.append(code)
+
+                for code in expired:
+                    print(f"Cleaning up exired session: {code}")
+                    del sessions[code]
+
+            if expired:
+                try:
+                    save_data()
+                except Exception as e:
+                    print("[CLEANUP] Error saving after data cleanup:", e)
+
+        
+        except Exception as e:
+            print("[CLEANUP] unexpected error in cleaup thread:", e)
+            time.sleep(5)
 
 @app.route('/player_data/<code>')
 def player_data(code):
@@ -184,15 +203,15 @@ def player_data(code):
             'current_turn': game['current_turn'],
             'round_count': game['round_count'],
             'notes': game['notes'],
-            code:code
+            #code:code
     })
 
 @app.route('/player/<code>')
 def player_view(code):
-    touch_session(code)
+    #touch_session(code)
     game = sessions.get(code)
     if not game:
-        return "Session not found ):", 404
+        return render_template("session_not_found.html"), 404
     return render_template('player.html',
                             initiative_list = game['initiative_list'],
                             current_turn = game['current_turn'],
@@ -202,12 +221,12 @@ def player_view(code):
 
 @app.route('/admin/<code>')
 def admin_view(code):
-    touch_session(code)
+    #touch_session(code)
     if not os.path.exists(DATA_FILE):
         init_data_file()
     game = sessions.get(code)
     if not game:
-        return 'Session not found ):', 404
+        return render_template("session_not_found.html"), 404
     load_data()
     #return render_template('admin.html', code=code, **game)
     return render_template('admin.html', 
@@ -222,12 +241,8 @@ def add(code):
     touch_session(code)
     load_data()
     game = sessions.get(code)
-    print(sessions)
-    #if not game:
-    #    return "Session not found ):", 404
     name = request.form['name']
     initiative = int(request.form['initiative'])
-    print(name, initiative)
     sessions.get(code)['initiative_list'].append({'name': name, 'initiative': initiative, 'status': 'alive'})
     sessions.get(code)['initiative_list'].sort(key=lambda x: x['initiative'], reverse=True)
     save_data()
@@ -238,7 +253,7 @@ def add_note(code):
     touch_session(code)
     game = sessions.get(code) 
     if not game:
-        return "Session not found ):", 404
+        return render_template("session_not_found.html"), 404
     note = request.form['note']
     game['notes'].append(note)
     save_data()
@@ -249,7 +264,7 @@ def next_turn(code):
     touch_session(code)
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     if len(game['initiative_list']) == 0:
         return redirect(url_for('admin_view', code=code))
     game['current_turn'] = (game['current_turn'] + 1) % len(game['initiative_list'])
@@ -263,7 +278,7 @@ def dead(code, name):
     touch_session(code)
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     for combatant in game['initiative_list']:
         if combatant['name'] == name:
             combatant['status'] = 'dead'
@@ -276,7 +291,7 @@ def delete(code, name):
     touch_session(code)
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     new_list = [d for d in game['initiative_list'] if d.get('name') != name]
     game['initiative_list'] = new_list
     save_data()
@@ -289,7 +304,7 @@ def reset(code):
     load_data()
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     game['initiative_list'] = []
     game['notes'] = []
     game['current_turn'] = 0
@@ -302,7 +317,7 @@ def clear_notes(code):
     print('trying to reset')
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     game['notes'] = []
     save_data()
     return redirect(url_for('admin_view',code=code))
@@ -312,7 +327,7 @@ def upload_csv(code):
     print('trying to reset')
     game = sessions.get(code)
     if not game:
-        return "session not found ):", 404
+        return render_template("session_not_found.html"), 404
     if 'file' not in request.files:
         print("no file part in request")
         return redirect(url_for('admin_view',code=code))

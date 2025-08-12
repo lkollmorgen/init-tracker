@@ -29,17 +29,19 @@ version 0.0
 - [`x`] create a system to accept initiative from a .csv
 - [`x`] fix error when there is not initiative\_data.json starting file
 - [`x`] add pytest for csv imports
-- ['x'] fix up UI (it's hideous)
+- [`x`] fix up UI (it's hideous)
 - [`x`] allow for csv exports
 - [`x`] include timestamp in export filename **i can do this on my OWN**
 version 1.0
 - [`x`] fix CONSTANT refreshing on player view page
 - [`x`] button to go to admin page from player page
-- ['x'] create a join code like in jackbox so people can host united sessions
-- ['x'] fix player_view methods=post thing
+- [`x`] create a join code like in jackbox so people can host united sessions
+- [`x`] fix player_view methods=post thing
 - [] run some stress tests to see how many games can function at once
 - [`x`] add my github *cringes*
 - [] fix the 'alive' button
+- [`x`] add player 'timeout' page
+- [] give DM a warning when their session is going to expire
 
 #### Neat tricks:
 ```
