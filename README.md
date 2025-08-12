@@ -42,6 +42,7 @@ version 1.0
 - [] fix the 'alive' button
 - [`x`] add player 'timeout' page
 - [] give DM a warning when their session is going to expire
+- [] fix UI so buttons are horizontally placed on ADMIN page
 
 #### Neat tricks:
 ```

@@ -159,7 +159,7 @@ def touch_session(code):
     if code in sessions:
         sessions[code]['last_active'] = datetime.utcnow().isoformat()
 
-def cleanup_sessions(timeout_minutes=3, sleep_seconds=300):
+def cleanup_sessions(timeout_minutes=30, sleep_seconds=300):
     print("[CLEANUP] Cleanup thread started")
     while True:
         try:
