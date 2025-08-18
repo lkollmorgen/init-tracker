@@ -4,7 +4,7 @@ Welcome to our initiative tracker. Lots of updates coming soon
 ### Directory
 - '/admin' - takes you to admin panel page to edit the initiative list and such
 - '/player' - players can waffle about on this page so they know when they'll need to act
--'/landing' - visitors can start a new session or join another session
+- '/landing' - visitors can start a new session or join another session
 
 ### USAGE
 - You can create a new session (as a DM) or you can join a DM's session using their join code
@@ -42,7 +42,8 @@ version 1.0
 - [] fix the 'alive' button
 - [`x`] add player 'timeout' page
 - [] give DM a warning when their session is going to expire
-- [] fix UI so buttons are horizontally placed on ADMIN page
+- [`x`] fix UI so buttons are horizontally placed on ADMIN page
+- [] add a round counter on the 'admin view' page
 
 #### Neat tricks:
 ```

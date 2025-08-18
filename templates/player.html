@@ -89,7 +89,7 @@
                                     notesList.innerHTML = '';
                                     data.notes.forEach(note => {
                                                 const li = document.createElement('li');
-                                                li.style.fontsize = "1rem";
+                                                li.style.fontSize = "1rem";
                                                 li.style.padding = "0";
                                                 li.style.margin = "0";
                                                 li.textContent = note;
@@ -103,7 +103,7 @@
                                     //if (timeLeft <= 5 * 60 * 1000 && !warned) {
                                     //            warned = true;
                                     //            alert("!!!! Your session will expire in 5 minutes!! Make sure to save your notes");
-                                            }
+                                            //}
                              })
                              .catch(error => console.error('error fetching player data:', error));
                }

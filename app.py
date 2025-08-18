@@ -273,15 +273,32 @@ def next_turn(code):
     save_data()
     return redirect(url_for('admin_view', code=code))
 
-@app.route('/<code>/dead/<name>', methods=['POST'])
-def dead(code, name):
+@app.route('/<code>/previous', methods=['POST'])
+def previous_turn(code):
+    touch_session(code)
+    game = sessions.get(code)
+    if not game:
+        return render_template("session_not_found.html"), 404
+    if len(game['initiative_list']) == 0:
+        return redirect(url_for('admin_view', code=code))
+    game['current_turn'] = (game['current_turn'] - 1) % len(game['initiative_list'])
+    if game['current_turn'] == 0:
+        game['round_count'] -= 1
+    save_data()
+    return redirect(url_for('admin_view', code=code))
+
+
+@app.route('/<code>/toggle_dead/<name>', methods=['POST'])
+def toggle_dead(code, name):
     touch_session(code)
     game = sessions.get(code)
     if not game:
         return render_template("session_not_found.html"), 404
     for combatant in game['initiative_list']:
-        if combatant['name'] == name:
+        if combatant['name'] == name and combatant['status'] == 'alive':
             combatant['status'] = 'dead'
+        elif combatant['name'] == name and combatant['status'] == 'dead':
+            combatant['status'] = 'alive'
     save_data()
     return redirect(url_for('admin_view',code=code))
 
